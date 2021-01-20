@@ -1,45 +1,60 @@
 import React, { Component } from 'react';
 import './App.css';
+import HomePage from '../components/HomePage';
 import SearchBox from '../components/SearchBox';
-import CardList from '../components/CardList';
+import Card from '../components/Card';
 
 
 class App extends Component {
   constructor() {
     super();
     this.state={
-      robots:[],
+      pokemon:[],
       searchfield:''
     }    
   }
 
-  componentDidMount() {
-    fetch('http://jsonplaceholder.typicode.com/users')
-      .then(res => res.json())
-      .then(users => {this.setState({robots: users})})
+  // componentDidMount() {
+  //   fetch('https://pokeapi.co/api/v2/pokemon?limit=151')
+  //     .then(res => res.json())
+  //     .then(users =>  {this.setState({pokedex: users.results})})
     
-  }
+  // }
 
-  onSearchChange = (e) =>{
-    this.setState({searchfield: e.target.value})    
+  onSearchChange = e => {
+    e.preventDefault();
+    //   const text = document.getElementById('pkmnSearch');
+    //   this.setState({searchfield: text.value});
+    fetch(`https://pokeapi.co/api/v2/pokemon/butterfree`)
+    .then(res => res.json())
+    .then(data => this.setState({pokemon: data}))
   }
 
   render(){
-    const filteredRobots = this.state.robots.filter(robot => {
-      return robot.name.toLowerCase().includes(this.state.searchfield.toLowerCase())
-    })
+    
 
-    if(this.state.robots.length === 0) {
-     return <h1>Looking in PC</h1>
-    } else{
+    if (this.state.pokemon.length === 0){
+      return(
+        <div>
+          <HomePage searchChange={this.onSearchChange}/>
+        </div>
+      )         
+      
+    }else{
       return(
         <div className='tc'>
           <h1>Pokemon</h1>
           <SearchBox searchChange={this.onSearchChange} />
-          <CardList robots={filteredRobots}/>
+          <Card 
+           name={this.state.pokemon.name}
+           height={this.state.pokemon.height}
+           weight={this.state.pokemon.weight}
+           types={this.state.pokemon.types}
+           img={this.state.pokemon.sprites.other.dream_world.front_default}        
+          />
         </div>
         )
-    }    
+      }   
   }
 }
 
